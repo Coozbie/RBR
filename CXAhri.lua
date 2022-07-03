@@ -8,8 +8,8 @@ local myHero = SDK.Player
 if myHero:GetCharacterName() ~= "Ahri" then return end
 
 local Ahri = {}
-local version = 2.3
-_G.CoreEx.AutoUpdate("https://raw.githubusercontent.com/Coozbie/RBR/main/CXAhri.lua", 2.3)
+local version = "2.4", "2.4"
+_G.CoreEx.AutoUpdate("https://raw.githubusercontent.com/Coozbie/RBR/main/CXAhri.lua", version)
 
 local DreamTS = DreamTSLib.TargetSelectorSdk
 local Vector = SDK.Libs.Vector
@@ -115,6 +115,17 @@ function Ahri:Menu()
         :AddCheckbox("w", "Use W", true)
         :AddCheckbox("e", "Use E", true)
         :AddSlider("mana", "Min Mana Percent:", {min = 0, max = 100, default = 10, step = 5})
+        :GetParent()
+    :AddSubMenu("lc", "Lane Clear")
+        :AddCheckbox("q", "Use Q (Fast Clear)", true)
+        :AddSlider("qx", "Min Minions:", {min = 0, max = 8, default = 3, step = 1})
+        :AddSlider("qm", "Min Mana Percent:", {min = 0, max = 100, default = 10, step = 5})
+        :GetParent()
+    :AddSubMenu("jg", "Jungle Clear")
+        :AddCheckbox("q", "Use Q", true)
+        :AddCheckbox("w", "Use W", true)
+        :AddCheckbox("e", "Use E", true)
+        :GetParent()
 
     :AddSubMenu("antigap", "Anti Gapclose")
         self.antiGapHeros = {}
@@ -196,6 +207,13 @@ function Ahri:GetItem(name)
     end
 end
 
+function Ahri:IsValidTarget(unit, radius, fromPos)
+    fromPos = fromPos or Player.ServerPos
+    radius = radius or huge
+
+    return unit and unit.MaxHealth > 6 and fromPos:DistanceSqr(unit.ServerPos) < radius and _G.Prediction.SDK.IsValidTarget(unit, pow(radius, 2))
+end
+
 function Ahri:CastEF(target)
     local ef = self:GetItem("6656Cast")
     if ef and target and target.IsAI then
@@ -266,10 +284,52 @@ function Ahri:CastR()
     end
 end
 
+function Ahri:LaneClear()
+    if self.menu:GetLocal("lc.q") then
+        local minionsInERange = _G.CoreEx.ObjectManager.GetNearby("enemy", "minions")
+        local minionsPositions = {}
+        local myPos = myHero:GetPosition()
+        for _, minion in ipairs(minionsInERange) do
+            if minion.Position:DistanceSqr(myHero:GetPosition()) < (self.q.range * self.q.range) then
+                table.insert(minionsPositions, minion.Position)
+            end
+        end
+        local bestPos, numberOfHits = _G.CoreEx.Geometry.BestCoveringRectangle(minionsPositions, myPos, self.q.width * 2)
+        if _G.Libs.Orbwalker.IsFastClearEnabled() then
+            if numberOfHits >= self.menu:GetLocal("lc.qx") then
+                if Player.ManaPercent * 100 >= self.menu:GetLocal("lc.qm") then
+                    if SDK.Input:Cast(SDK.Enums.SpellSlot.Q, bestPos) then
+                        return
+                    end
+                end
+            end
+        end
+    end
+end
+
+function Ahri:JungleClear()
+    local Jungle = _G.CoreEx.ObjectManager.GetNearby("neutral", "minions")
+    for iJGLQ, objJGLQ in ipairs (Jungle) do
+        local minion = objJGLQ.AsMinion
+        if minion and minion.MaxHealth > 6 and minion.Position:DistanceSqr(myHero:GetPosition()) < (600 * 600) and _G.Libs.TargetSelector():IsValidTarget(minion) then
+            if self.menu:GetLocal("jg.q") then
+                SDK.Input:Cast(SDK.Enums.SpellSlot.Q, minion.Position)
+            end
+            if self.menu:GetLocal("jg.w") and minion.Position:DistanceSqr(myHero:GetPosition()) < (500 * 500) then
+                SDK.Input:Cast(SDK.Enums.SpellSlot.W, minion.Position)
+            end
+            if self.menu:GetLocal("jg.e") then
+                SDK.Input:Cast(SDK.Enums.SpellSlot.E, minion.Position)
+            end
+        end
+    end
+end
+
 function Ahri:OnTick()
 
     local ComboMode = _G.Libs.Orbwalker.GetMode() == "Combo"
     local HarassMode = _G.Libs.Orbwalker.GetMode() == "Harass"
+    local WaveclearMode = _G.Libs.Orbwalker.GetMode() == "Waveclear"
 
     if myHero:CanUseSpell(SDK.Enums.SpellSlot.E) then
 
@@ -289,7 +349,7 @@ function Ahri:OnTick()
             end
         end
 
-        if (ComboMode and self.menu:GetLocal("combo.e")) or (HarassMode and self.menu:GetLocal("harass.e")) then
+        if (ComboMode and self.menu:GetLocal("combo.e")) or (HarassMode and self.menu:GetLocal("harass.e") and (myHero:GetManaPercent() * 100 >= self.menu:GetLocal("harass.mana"))) then
             local target = e_targets[1]
             if target then
                 local pred = e_preds[target:GetNetworkId()]
@@ -308,7 +368,7 @@ function Ahri:OnTick()
     if myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) then
         local q_targets, q_preds = self.TS:GetTargets(self.q, myHero:GetPosition())
 
-        if (ComboMode and self.menu:GetLocal("combo.q")) or (HarassMode and self.menu:GetLocal("harass.q")) then
+        if (ComboMode and self.menu:GetLocal("combo.q")) or (HarassMode and self.menu:GetLocal("harass.q") and (myHero:GetManaPercent() * 100 >= self.menu:GetLocal("harass.mana"))) then
             local target = q_targets[1]
             if target then
                 local pred = q_preds[target:GetNetworkId()]
@@ -316,6 +376,9 @@ function Ahri:OnTick()
                     return
                 end
             end
+        end
+        if WaveclearMode then
+            self:LaneClear()
         end
     end
 
@@ -340,9 +403,8 @@ function Ahri:OnTick()
         local ef = self:GetItem("6656Cast")
         local ef_targets, ef_preds = self.TS:GetTargets(self.efline, myHero:GetPosition())
         if (ComboMode and ef) then
-            print("XD")
             local target = ef_targets[1]
-            if target and not target:HasBuffOfType("Charm") then
+            if target then
                 local pred = ef_preds[target:GetNetworkId()]
                 if pred and self:CastEver(pred) then
                     return
@@ -350,6 +412,7 @@ function Ahri:OnTick()
             end
         end
     end
+    if WaveclearMode then self:JungleClear() end
 end
 
 local get_d3d_color = SDK.Libs.Color.GetD3DColor
