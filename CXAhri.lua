@@ -112,7 +112,7 @@ function Ahri:Menu()
 
     self.menu
     :AddSubMenu("Key", "Key Settings")
-        :AddCheckbox("e", "Start Combo With E", true)
+        :AddKeybind("e", "Start Combo With E", string.byte("K"), true, true)
         :GetParent()
     :AddSubMenu("combo", "Combo Settings")
         :AddLabel("Q Settings", true)
