@@ -1,5 +1,6 @@
 local DreamTSLib = _G.DreamTS or require("DreamTS")
 
+---@type SDK_SDK
 local SDK = DreamTSLib.TargetSelectorSdk.SDK
 
 ---@type SDK_AIHeroClient
@@ -8,8 +9,16 @@ local myHero = SDK.Player
 if myHero:GetCharacterName() ~= "Ahri" then return end
 
 local Ahri = {}
-local version = "2.4", "2.4"
-_G.CoreEx.AutoUpdate("https://raw.githubusercontent.com/Coozbie/RBR/main/CXAhri.lua", version)
+
+local update_data = {
+    Robur = {
+        ScriptName = "CXAhri",
+        ScriptVersion = "2.6",
+        Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
+    }
+}
+
+SDK.Common.AutoUpdate(update_data)
 
 local DreamTS = DreamTSLib.TargetSelectorSdk
 local Vector = SDK.Libs.Vector
@@ -61,10 +70,17 @@ function Ahri:__init()
     self.efline = {
         type = "linear",
         speed = 1600,
-        range = 820,
+        range = 800,
         delay = 0.3,
         width = 80,
         castRate = "instant",
+    }
+    self.efline2 = {
+        type = "linear",
+        speed = 1600,
+        range = 800,
+        delay = 0.3,
+        width = 80,
     }
     self:Menu()
     self.RHaveBuff = false
@@ -96,7 +112,7 @@ function Ahri:Menu()
 
     self.menu
     :AddSubMenu("Key", "Key Settings")
-        :AddKeybind("e", "Start Combo With E", string.byte("K"))
+        :AddCheckbox("e", "Start Combo With E", true)
         :GetParent()
     :AddSubMenu("combo", "Combo Settings")
         :AddLabel("Q Settings", true)
@@ -128,10 +144,12 @@ function Ahri:Menu()
         :GetParent()
 
     :AddSubMenu("antigap", "Anti Gapclose")
+        local anti_gap_menu = self.menu:GetLocalChild("antigap"):AsMenu()
         self.antiGapHeros = {}
-        for _, enemy in ipairs(enemies) do
-            --:AddCheckbox(enemy.CharName, enemy.CharName, true)
-            self.antiGapHeros[enemy:GetNetworkId()] = true
+        for _, hero in ipairs(enemies) do
+            local char_name = hero:GetCharacterName()
+            anti_gap_menu:AddCheckbox(char_name, "AntiGap:" .. char_name, true)
+            self.antiGapHeros[hero:GetNetworkId()] = true
         end
 
     self.menu
@@ -140,49 +158,55 @@ function Ahri:Menu()
         :AddCheckbox("w", "W", true)
         :AddCheckbox("e", "E", true)
         :GetParent()
-    :AddLabel("Version: " .. version .. "", true)
+    :AddLabel("Version: " .. update_data.Robur.ScriptVersion .. "", true)
     :AddLabel("Author: Coozbie", true)
 
     self.menu:Render()
 end
 
+local color_white = SDK.Libs.Color.GetD3DColor(255,255,255,255)
+
 function Ahri:OnDraw()
-    if self.menu:GetLocal("draws.q") and myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) and myHero:IsOnScreen() then
-        SDK.Renderer:DrawCircle3D(myHero:GetPosition(), self.q.range, self:Hex(255,255,255,255))
+    if not myHero:IsOnScreen() then
+        return
     end
-    if self.menu:GetLocal("draws.w") and myHero:CanUseSpell(SDK.Enums.SpellSlot.W) and myHero:IsOnScreen() then
-        SDK.Renderer:DrawCircle3D(myHero:GetPosition(), self.menu:GetLocal("combo.wr"), self:Hex(255,255,255,255))
+
+    if self.menu:GetLocal("draws.q") and myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) then
+        SDK.Renderer:DrawCircle3D(myHero:GetPosition(), self.q.range, color_white)
     end
-    if self.menu:GetLocal("draws.e") and myHero:CanUseSpell(SDK.Enums.SpellSlot.E) and myHero:IsOnScreen() then
-        SDK.Renderer:DrawCircle3D(myHero:GetPosition(), self.e.range, self:Hex(255,255,255,255))
+    if self.menu:GetLocal("draws.w") and myHero:CanUseSpell(SDK.Enums.SpellSlot.W) then
+        SDK.Renderer:DrawCircle3D(myHero:GetPosition(), self.menu:GetLocal("combo.wr"), color_white)
+    end
+    if self.menu:GetLocal("draws.e") and myHero:CanUseSpell(SDK.Enums.SpellSlot.E) then
+        SDK.Renderer:DrawCircle3D(myHero:GetPosition(), self.e.range, color_white)
     end
 
 end
 
 local delayedActions, delayedActionsExecuter = {}, nil
 function Ahri:DelayAction(func, delay, args) --delay in seconds
-  if not delayedActionsExecuter then
-    function delayedActionsExecuter()
-      for t, funcs in pairs(delayedActions) do
-        if t <= os.clock() then
-          for i = 1, #funcs do
-            local f = funcs[i]
-            if f and f.func then
-              f.func(unpack(f.args or {}))
+    if not delayedActionsExecuter then
+        function delayedActionsExecuter()
+            for t, funcs in pairs(delayedActions) do
+                if t <= os.clock() then
+                    for i = 1, #funcs do
+                        local f = funcs[i]
+                        if f and f.func then
+                            f.func(unpack(f.args or {}))
+                        end
+                    end
+                    delayedActions[t] = nil
+                end
             end
-          end
-          delayedActions[t] = nil
         end
-      end
+        SDK.EventManager:RegisterCallback(SDK.Enums.Events.OnTick, delayedActionsExecuter)
     end
-    SDK.EventManager:RegisterCallback(SDK.Enums.Events.OnTick, delayedActionsExecuter)
-  end
-  local t = os.clock() + (delay or 0)
-  if delayedActions[t] then
-    delayedActions[t][#delayedActions[t] + 1] = {func = func, args = args}
-  else
-    delayedActions[t] = {{func = func, args = args}}
-  end
+    local t = os.clock() + (delay or 0)
+    if delayedActions[t] then
+        delayedActions[t][#delayedActions[t] + 1] = {func = func, args = args}
+    else
+        delayedActions[t] = {{func = func, args = args}}
+    end
 end
 
 
@@ -205,13 +229,6 @@ function Ahri:GetItem(name)
             end
         end
     end
-end
-
-function Ahri:IsValidTarget(unit, radius, fromPos)
-    fromPos = fromPos or Player.ServerPos
-    radius = radius or huge
-
-    return unit and unit.MaxHealth > 6 and fromPos:DistanceSqr(unit.ServerPos) < radius and _G.Prediction.SDK.IsValidTarget(unit, pow(radius, 2))
 end
 
 function Ahri:CastEF(target)
@@ -340,7 +357,7 @@ function Ahri:OnTick()
             local unit = e_targets[i]
             local pred = e_preds[unit:GetNetworkId()]
             if pred then
-                if pred.targetDashing and self:CastE(pred) then --and self.antiGapHeros[unit:GetNetworkId()] and self.menu:GetLocal("antigap." .. unit:GetCharacterName()) and self:CastE(pred) then
+                if pred.targetDashing and self.antiGapHeros[unit:GetNetworkId()] and self.menu:GetLocal("antigap." .. unit:GetCharacterName()) and self:CastE(pred) then
                     return
                 end
                 if pred.isInterrupt and self:CastE(pred) then
@@ -388,7 +405,7 @@ function Ahri:OnTick()
         if target then
             if (ComboMode and self.menu:GetLocal("combo.w")) or (HarassMode and self.menu:GetLocal("harass.w")) then 
                 if target:GetPosition():Distance(myHero:GetPosition()) <= (self.menu:GetLocal("combo.wr")) then
-                    if self.menu:GetLocal("combo.wc") and target:HasBuffOfType("Charm") then 
+                    if self.menu:GetLocal("combo.wc") and target:HasBuffOfType(SDK.Enums.BuffType.Charm) then 
                         SDK.Input:Cast(SDK.Enums.SpellSlot.W, myHero)
                     elseif not self.menu:GetLocal("combo.wc") or self:GetPercentHealth(target) < 40 then
                         SDK.Input:Cast(SDK.Enums.SpellSlot.W, myHero)
@@ -401,7 +418,7 @@ function Ahri:OnTick()
     end
     if not myHero:CanUseSpell(SDK.Enums.SpellSlot.E) and not self.Emiss then
         local ef = self:GetItem("6656Cast")
-        local ef_targets, ef_preds = self.TS:GetTargets(self.efline, myHero:GetPosition())
+        local ef_targets, ef_preds = self.TS:GetTargets(self.efline2, myHero:GetPosition())
         if (ComboMode and ef) then
             local target = ef_targets[1]
             if target then
