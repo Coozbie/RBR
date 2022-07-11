@@ -13,7 +13,7 @@ local Kayn = {}
 local update_data = {
     Robur = {
         ScriptName = "CXKayn",
-        ScriptVersion = "1.0",
+        ScriptVersion = "1.1",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -275,7 +275,7 @@ function Kayn:MultiR(minCount)
     end
     if bestObj then
         SDK.Input:Cast(SDK.Enums.SpellSlot.W, bestPred.castPosition)
-        bestPred:Draw()
+        --bestPred:Draw()
     end
 end
 
