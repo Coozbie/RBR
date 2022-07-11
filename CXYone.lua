@@ -13,7 +13,7 @@ local Yone = {}
 local update_data = {
     Robur = {
         ScriptName = "CXYone",
-        ScriptVersion = "1.0",
+        ScriptVersion = "1.1",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -406,7 +406,6 @@ function Yone:MultiR(minCount)
     end
     if bestObj then
         SDK.Input:Cast(SDK.Enums.SpellSlot.R, bestPred.castPosition)
-        bestPred:Draw()
     end
 end
 
