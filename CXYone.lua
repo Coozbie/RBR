@@ -13,7 +13,7 @@ local Yone = {}
 local update_data = {
     Robur = {
         ScriptName = "CXYone",
-        ScriptVersion = "1.1",
+        ScriptVersion = "1.2",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -480,8 +480,8 @@ function Yone:JungleClear()
     local Jungle = _G.CoreEx.ObjectManager.GetNearby("neutral", "minions")
     for iJGLQ, objJGLQ in ipairs (Jungle) do
         local minion = objJGLQ.AsMinion
-        if minion and minion.IsMinion and minion.MaxHealth > 6 and minion.Position:DistanceSqr(myHero:GetPosition()) < (450 * 450) and _G.Libs.TargetSelector():IsValidTarget(minion) then
-            if self.menu:GetLocal("jg.q") and myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) then
+        if minion and minion.IsMinion and minion.MaxHealth > 6 and not minion.IsDead and minion.Position:DistanceSqr(myHero:GetPosition()) < (450 * 450) and _G.Libs.TargetSelector():IsValidTarget(minion) then
+            if self.menu:GetLocal("jg.q") and myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) and myHero:GetSpell(SDK.Enums.SpellSlot.Q):GetName() == "YoneQ" then
                 SDK.Input:Cast(SDK.Enums.SpellSlot.Q, minion.Position)
             end
             if self.menu:GetLocal("jg.w") and myHero:CanUseSpell(SDK.Enums.SpellSlot.W) then
@@ -605,7 +605,8 @@ function Yone:OnTick()
     if self.menu:GetLocal("Key.q") then
         if myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) and myHero:GetSpell(SDK.Enums.SpellSlot.Q):GetName() == "YoneQ" and #self:GetEnemyHeroesInRange(450) == 0 then
             for i, obj in ipairs(SDK.ObjectManager:GetEnemyMinions()) do
-                if obj and obj:IsValid() and self:GetDistanceSqr(obj:GetPosition()) <= (450 * 450) then
+                obj = obj:AsAI()
+                if obj and obj:IsValid() and obj:IsAlive() and obj:GetMaxHealth() > 6 and self:GetDistanceSqr(obj:GetPosition()) <= (450 * 450) and myHero:GetSpell(SDK.Enums.SpellSlot.Q):GetName() == "YoneQ" and obj:AsMinion() then
                     self:CastQ(obj)
                 end
             end
