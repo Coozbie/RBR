@@ -13,7 +13,7 @@ local Yone = {}
 local update_data = {
     Robur = {
         ScriptName = "CXYone",
-        ScriptVersion = "1.2",
+        ScriptVersion = "1.3",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -528,6 +528,7 @@ function Yone:LastHit()
             minion = minion:AsAI()
             if minion and minion:IsValid() and minion:IsAlive() and minion:GetMaxHealth() > 6 and minion:GetPosition():DistanceSqr(myHero:GetPosition()) < (450 * 450) then 
                 if (self:qDmg(minion) > minion:GetHealth()) then
+                    if minion:GetName() == "CampRespawn" or minion:GetName() == "WardCorpse" then return end
                     self:CastQ(minion)
                 end
             end
@@ -607,6 +608,7 @@ function Yone:OnTick()
             for i, obj in ipairs(SDK.ObjectManager:GetEnemyMinions()) do
                 obj = obj:AsAI()
                 if obj and obj:IsValid() and obj:IsAlive() and obj:GetMaxHealth() > 6 and self:GetDistanceSqr(obj:GetPosition()) <= (450 * 450) and myHero:GetSpell(SDK.Enums.SpellSlot.Q):GetName() == "YoneQ" and obj:AsMinion() then
+                    if obj:GetName() == "CampRespawn" or obj:GetName() == "WardCorpse" then return end
                     self:CastQ(obj)
                 end
             end
