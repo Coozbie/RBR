@@ -72,7 +72,7 @@ local TargetedSpell = {
 function Nilah:__init()
     self.q = {
         type = "linear",
-        speed = 1350,
+        speed = math.huge,
         range = 600,
         delay = 0.25,
         width = 150,
