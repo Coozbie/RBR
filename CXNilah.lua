@@ -13,7 +13,7 @@ local Nilah = {}
 local update_data = {
     Robur = {
         ScriptName = "CXNilah",
-        ScriptVersion = "1.0",
+        ScriptVersion = "1.1",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -381,16 +381,21 @@ function Nilah:KillSteal()
     for i, enemy in ipairs(enemies) do
         if enemy and self:ValidTarget(enemy)then
             local hp = enemy:GetHealth()
-            local d = self:GetDistanceSqr(enemy:GetPosition())
+            local d = self:GetDistanceSqr(enemy:GetPosition()) < (550 * 550)
             local e = myHero:CanUseSpell(SDK.Enums.SpellSlot.E)
             local q = myHero:CanUseSpell(SDK.Enums.SpellSlot.Q)
+            local r = myHero:CanUseSpell(SDK.Enums.SpellSlot.R)
             local ed = self:eDmg(enemy)
             local qd = self:qDmg(enemy)
+            local rd = self:rDmg(enemy)
             local aa = self:AADmg(enemy)
-            if e and d < (600 * 600) and (ed + aa) >= hp and #self:GetEnemyHeroesInRange(550, enemy:GetPosition()) <= 2 then
+            if e and d and (ed + aa) >= hp and #self:GetEnemyHeroesInRange(550, enemy:GetPosition()) <= 2 then
                 SDK.Input:Cast(SDK.Enums.SpellSlot.E, enemy)
             end
-            if e and q and d < (600 * 600) and (ed + qd + aa) >= hp and #self:GetEnemyHeroesInRange(550, enemy:GetPosition()) <= 2 then
+            if e and q and d and (ed + qd + aa) >= hp and #self:GetEnemyHeroesInRange(550, enemy:GetPosition()) <= 2 then
+                SDK.Input:Cast(SDK.Enums.SpellSlot.E, enemy)
+            end
+            if e and q and r and d and (enemy:GetHealth() / (rd + qd + ed + aa)) >= 0.50 and (ed + qd + rd) >= hp and #self:GetEnemyHeroesInRange(550, enemy:GetPosition()) <= 2 then
                 SDK.Input:Cast(SDK.Enums.SpellSlot.E, enemy)
             end
         end
