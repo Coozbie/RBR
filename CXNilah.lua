@@ -125,7 +125,6 @@ function Nilah:Menu()
         :AddSlider('wDelay', 'Xs before Spell hit', {min = 0, max = 0.75, default = 0.1, step = 0.01})
         :AddLabel("E Settings", true)
         :AddCheckbox("e", "Use E", true)
-        :AddCheckbox("er", "Use E for R", true)
         :AddLabel("R Settings", true)
         :AddCheckbox("r", "Use R", true)
         :AddSlider("rx", "R If Enemies >=", {min = 1, max = 5, default = 3, step = 1})
@@ -550,16 +549,6 @@ function Nilah:OnTick()
         end
         if WaveclearMode then
             self:LaneClear()
-        end
-    end
-    if myHero:CanUseSpell(SDK.Enums.SpellSlot.E) then
-        if self.menu:GetLocal("combo.er") and ComboMode then
-            if myHero:GetBuff('NilahR') then
-                local bestPos = self:GetBestE()
-                if bestPos and SDK.Input:Cast(SDK.Enums.SpellSlot.E, bestPos) then
-                    return
-                end
-            end
         end
     end
     if myHero:CanUseSpell(SDK.Enums.SpellSlot.R) then
