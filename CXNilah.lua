@@ -348,7 +348,7 @@ end
 
 function Nilah:OnExecuteCastFrames(unit, spell)
     if not spell:GetName():lower():find("attack") then return end
-    if myHero:CanUseSpell(SDK.Enums.SpellSlot.W) and self.menu:GetLocal("combo.w") then
+    if myHero:CanUseSpell(SDK.Enums.SpellSlot.W) and self.menu:GetLocal("combo.w") and spell:GetTarget():IsMe() then
         for k, v in pairs(TargetedAA) do
             if k == spell:GetName() and self.menu:GetLocal("blockaa." .. k) and myHero:GetHealthPercent() <= self.menu:GetLocal("blockaa." .. k .. "hp") then
                 local dt = unit:GetPosition():Distance(myHero:GetPosition())
