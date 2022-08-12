@@ -13,7 +13,7 @@ local Ashe = {}
 local update_data = {
     Robur = {
         ScriptName = "CXAshe",
-        ScriptVersion = "1.0",
+        ScriptVersion = "1.1",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -302,7 +302,7 @@ function Ashe:OnTick()
             local target = r_targets[1]
             if target then
                 local pred = r_preds[target:GetNetworkId()]
-                if pred and self:GetDistanceSqr(target) < 300^2 and self:CastR(pred, "instant") then
+                if pred and self:GetDistanceSqr(target:GetPosition()) < 300^2 and self:CastR(pred, "instant") then
                     return
                 end
             end
