@@ -13,7 +13,7 @@ local Sivir = {}
 local update_data = {
     Robur = {
         ScriptName = "CXSivir",
-        ScriptVersion = "1.0",
+        ScriptVersion = "1.1",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -181,7 +181,7 @@ function Sivir:Menu()
         :AddCheckbox("q", "Q", true)
         :GetParent()
     :AddLabel("Version: " .. update_data.Robur.ScriptVersion .. "", true)
-    :AddLabel("Author: Coozbie")
+    :AddLabel("Author: Coozbie", true)
 
     self.menu:Render()
 end
@@ -272,13 +272,14 @@ function Sivir:qDmg(target)
 end
 
 function Sivir:OnProcessSpell(unit, spell)
-    if unit:IsMe() and spell:GetTarget() and spell:GetTarget():IsMe() then return end
-    if myHero:CanUseSpell(SDK.Enums.SpellSlot.E) and self.menu:GetLocal("combo.e") then
-        for k, v in pairs(TargetedSpell) do
-            if k == spell:GetName() and self.menu:GetLocal("combo.blockSpell." .. k) then
-                local dt = unit:GetPosition():Distance(myHero:GetPosition())
-                local hitTime = v.delay + dt/v.speed
-                self:DelayAction(function() SDK.Input:Cast(SDK.Enums.SpellSlot.E, myHero) end, hitTime - self.menu:GetLocal("combo.wDelay") )
+    if unit:IsEnemy() and spell:GetTarget():IsMe() then
+        if myHero:CanUseSpell(SDK.Enums.SpellSlot.E) and self.menu:GetLocal("combo.e") then
+            for k, v in pairs(TargetedSpell) do
+                if k == spell:GetName() and k and self.menu:GetLocal("combo.blockSpell." .. k) then
+                    local dt = unit:GetPosition():Distance(myHero:GetPosition())
+                    local hitTime = v.delay + dt/v.speed
+                    self:DelayAction(function() SDK.Input:Cast(SDK.Enums.SpellSlot.E, myHero) end, hitTime - self.menu:GetLocal("combo.wDelay") )
+                end
             end
         end
     end
