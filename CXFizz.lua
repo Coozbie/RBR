@@ -13,7 +13,7 @@ local Fizz = {}
 local update_data = {
     Robur = {
         ScriptName = "CXFizz",
-        ScriptVersion = "1.3",
+        ScriptVersion = "1.4",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -190,7 +190,7 @@ end
 
 function Fizz:OnExecuteCastFrame(target)
     if (self.menu:GetLocal("combo.w") or self.menu:GetLocal("harass.w")) and myHero:CanUseSpell(SDK.Enums.SpellSlot.W) and (_G.Libs.Orbwalker.GetMode() == "Combo" or _G.Libs.Orbwalker.GetMode() == "Harass") then
-        if target and self:ValidTarget(target) and target:GetPosition():DistanceSqr(myHero:GetPosition()) < (self:GetAARange(target) + 50)^2 then
+        if target and target:AsHero() and self:ValidTarget(target) and target:GetPosition():DistanceSqr(myHero:GetPosition()) < (self:GetAARange(target) + 50)^2 then
             SDK.Input:Cast(SDK.Enums.SpellSlot.W, myHero)
         end
     end
