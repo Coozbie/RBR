@@ -13,7 +13,7 @@ local Ashe = {}
 local update_data = {
     Robur = {
         ScriptName = "CXAshe",
-        ScriptVersion = "1.1",
+        ScriptVersion = "1.2",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
