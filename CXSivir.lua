@@ -200,6 +200,8 @@ function Sivir:Menu()
     :AddSubMenu("harass", "Harass Settings")
         :AddLabel("Q Settings", true)
         :AddCheckbox("q", "Use Q", true)
+        :AddLabel("W Settings", true)
+        :AddCheckbox("w", "Use W", true)
         :GetParent()
     :AddSubMenu("lc", "Lane Clear")
         :AddCheckbox("q", "Use Q (Fast Clear)", true)
@@ -276,7 +278,7 @@ function Sivir:OnBasicAttack(unit, spell)
 end
 
 function Sivir:OnExecuteCastFrame(target)
-    if self.menu:GetLocal("combo.w") and myHero:CanUseSpell(SDK.Enums.SpellSlot.W) and (_G.Libs.Orbwalker.GetMode() == "Combo" or _G.Libs.Orbwalker.GetMode() == "Harass") then
+    if ((_G.Libs.Orbwalker.GetMode() == "Combo" and self.menu:GetLocal("combo.w")) or (self.menu:GetLocal("harass.w") and _G.Libs.Orbwalker.GetMode() == "Harass")) and myHero:CanUseSpell(SDK.Enums.SpellSlot.W) then
         if target and roburTS:IsValidTarget(target.data) and target:GetPosition():DistanceSqr(myHero:GetPosition()) < self:GetAARange(target)^2 then
             SDK.Input:Cast(SDK.Enums.SpellSlot.W, myHero)
         end
