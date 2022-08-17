@@ -13,7 +13,7 @@ local Sivir = {}
 local update_data = {
     Robur = {
         ScriptName = "CXSivir",
-        ScriptVersion = "1.2",
+        ScriptVersion = "1.3",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -48,6 +48,8 @@ local TargetedSpell = {
     ["DariusExecute"]               = {charName = "Darius"      , slot = "R" , delay = 0.25, speed = math.huge  , isMissile = false},    -- delay to be comfirm
     ["EliseHumanQ"]                 = {charName = "Elise"       , slot = "Q1", delay = 0.25, speed = 2200       , isMissile = true },
     ["EliseSpiderQCast"]            = {charName = "Elise"       , slot = "Q2", delay = 0.25, speed = math.huge  , isMissile = false},
+    ["EvelynnE"]                    = {charName = "Evelynn"     , slot = "E" , delay = 0.25, speed = math.huge  , isMissile = false},
+    ["EvelynnE2"]                   = {charName = "Evelynn"     , slot = "E" , delay = 0.25, speed = math.huge  , isMissile = false},
     ["Terrify"]                     = {charName = "FiddleSticks", slot = "Q" , delay = 0.25, speed = math.huge  , isMissile = false},
     ["FiddlesticksDarkWind"]        = {charName = "FiddleSticks", slot = "E" , delay = 0.25, speed = 1100       , isMissile = true },
     ["GangplankQProceed"]           = {charName = "Gangplank"   , slot = "Q" , delay = 0.25, speed = 2600       , isMissile = true },
@@ -72,19 +74,24 @@ local TargetedSpell = {
     ["SeismicShard"]                = {charName = "Malphite"    , slot = "Q" , delay = 0.25, speed = 1200       , isMissile = true },
     ["MalzaharE"]                   = {charName = "Malzahar"    , slot = "E" , delay = 0.25, speed = math.huge  , isMissile = false},
     ["MalzaharR"]                   = {charName = "Malzahar"    , slot = "R" , delay = 0   , speed = math.huge  , isMissile = false},
+    ["MaokaiW"]                     = {charName = "Maokai"      , slot = "W" , delay = 0   , speed = 1300       , isMissile = false},
     ["MissFortuneRicochetShot"]     = {charName = "MissFortune" , slot = "Q" , delay = 0.25, speed = 1400       , isMissile = true },  -- too lazy to calculate the speed forumla
     ["NasusW"]                      = {charName = "Nasus"       , slot = "W" , delay = 0.25, speed = math.huge  , isMissile = false},
     ["NautilusGrandLine"]           = {charName = "Nautilus"    , slot = "R" , delay = 0.5 , speed = 1400       , isMissile = true },  -- delay to be comfirm
     ["NocturneParanoia2"]           = {charName = "Nocturne"    , slot = "R" , delay = 0   , speed = 1800       , isMissile = false},  --seems that you will never detect it.
     ["OlafRecklessStrike"]          = {charName = "Olaf"        , slot = "E" , delay = 0.25, speed = math.huge  , isMissile = false},
     ["PoppyE"]                      = {charName = "Poppy"       , slot = "E" , delay = 0   , speed = 1800       , isMissile = false},
+    ["QuinnE"]                      = {charName = "Quinn"       , slot = "E" , delay = 0   , speed = 2500       , isMissile = false},
     ["RekSaiE"]                     = {charName = "RekSai"      , slot = "E" , delay = 0.25, speed = math.huge  , isMissile = false},
     ["RekSaiR"]                     = {charName = "RekSai"      , slot = "R" , delay = 1.5 , speed = math.huge  , isMissile = false},
     ["PuncturingTaunt"]             = {charName = "Rammus"      , slot = "E" , delay = 0.25, speed = math.huge  , isMissile = false},
     ["RyzeW"]                       = {charName = "Ryze"        , slot = "W" , delay = 0.25, speed = math.huge  , isMissile = false},
     ["RyzeE"]                       = {charName = "Ryze"        , slot = "E" , delay = 0.25, speed = 3500       , isMissile = true },
+    ["RenektonExecute"]             = {charName = "Renekton"    , slot = "W1", delay = 0.25, speed = math.huge  , isMissile = false},
+    ["RenektonSuperExecute"]        = {charName = "Renekton"    , slot = "W2", delay = 0.25, speed = math.huge  , isMissile = false},
     ["SyndraR"]                     = {charName = "Syndra"      , slot = "R" , delay = 0.25, speed = 1400       , isMissile = true },
     ["TwoShivPoison"]               = {charName = "Shaco"       , slot = "E" , delay = 0.25, speed = 1500       , isMissile = true },
+    ["Fling"]                       = {charName = "Singed"      , slot = "E" , delay = 0.25, speed = math.huge  , isMissile = false},
     ["BlindingDart"]                = {charName = "Teemo"       , slot = "Q" , delay = 0.25, speed = 1500       , isMissile = true },
     ["TristanaR"]                   = {charName = "Tristana"    , slot = "R" , delay = 0.25, speed = 2000       , isMissile = true },
     ["ViR"]                         = {charName = "Vi"          , slot = "R" , delay = 0.25, speed = 800        , isMissile = false},
@@ -100,6 +107,20 @@ local TargetedSpell = {
     ["BlueCardPreAttack"]           = {charName = "TwistedFate" , slot = "W" , delay = 0   , speed = 1500       , isMissile = true },
     ["RedCardPreAttack"]            = {charName = "TwistedFate" , slot = "W" , delay = 0   , speed = 1500       , isMissile = true },
     ["GoldCardPreAttack"]           = {charName = "TwistedFate" , slot = "W" , delay = 0   , speed = 1500       , isMissile = true },
+    ["TahmKenchR"]                  = {charName = "TahmKench"   , slot = "R" , delay = 0.25, speed = math.huge  , isMissile = false},
+}
+
+local TargetedAA = {
+    ["PowerFistAttack"] = {charName = "Blitzcrank", delay = 0.25, speed = math.huge},
+    ["CamilleQAttackEmpowered"] = {charName = "Camille", delay = 0.25, speed = math.huge},
+    ["NautilusRavageStrikeAttack"]  = {charName = "Nautilus"   , slot = "P" },
+    ["DariusNoxianTacticsONHAttack"] = {charName = "Darius", delay = 0.25, speed = math.huge},
+    ["XinZhaoQThrust3"]             = {charName = "XinZhao"    , slot = "Q3"},
+    ["EkkoEAttack"] = {charName = "Ekko", delay = 0.25, speed = math.huge},
+    ["FioraEAttack"] = {charName = "Fiora", delay = 0.25, speed = math.huge},
+    ["FioraEAttack2"] = {charName = "Fiora", delay = 0.25, speed = math.huge},
+    ["FizzWBasicAttack"] = {charName = "Fizz", delay = 0.25, speed = math.huge},
+    ["LeonaShieldOfDaybreakAttack"] = {charName = "Leona", delay = 0.32, speed = math.huge},
 }
 
 function Sivir:__init()
@@ -127,6 +148,7 @@ function Sivir:__init()
     SDK.EventManager:RegisterCallback(SDK.Enums.Events.OnDraw, function() self:OnDraw() end)
     SDK.EventManager:RegisterCallback(SDK.Enums.Events.OnProcessSpell, function(unit, spell) self:OnProcessSpell(unit, spell) end)
     SDK.EventManager:RegisterCallback(SDK.Enums.Events.OnBuffGain, function(obj, buff) self:OnBuffUpdate(obj, buff) end)
+    SDK.EventManager:RegisterCallback(SDK.Enums.Events.OnBasicAttack, function(unit, spell) self:OnBasicAttack(unit, spell) end)
     _G.CoreEx.EventManager.RegisterCallback(_G.CoreEx.Enums.Events.OnPostAttack, function(target) self:OnExecuteCastFrame(SDK.Types.AIBaseClient(target)) end)
 end
 
@@ -146,21 +168,37 @@ function Sivir:Menu()
         :AddLabel("E Settings", true)
         :AddCheckbox("e", "Use E", true)
         :AddSlider("wDelay", "Xs before spell hit", {min = 0, max = 0.75, default = 0.1, step = 0.01})
-        :AddSubMenu("blockSpell", "Auto E Block Spell")
+        :GetParent()
                 
-    local block_sub_menu = self.menu:GetLocalChild("combo.blockSpell")
-
+    self.menu
+    :AddSubMenu("blockSpell", "Auto E Block Spell")
+    local block_sub_menu = self.menu:GetLocalChild("blockSpell")
     for i, enemy in ipairs(enemies) do
         for k, spell in pairs(TargetedSpell) do
             if enemy:GetCharacterName() == spell.charName then
-                block_sub_menu:AddCheckbox(k, enemy:GetCharacterName() .." ["..spell.slot.."] | "..k, true)
+                block_sub_menu:AddLabel(enemy:GetCharacterName(), true)
+                block_sub_menu:AddCheckbox(k, enemy:GetCharacterName() .." ["..spell.slot.."] | ", true)
+                block_sub_menu:AddSlider(k .. "hp", "^- Health Percent: ", {min = 1, max = 100, default = 50, step = 1})
+            end
+        end
+    end
+
+    self.menu
+    :AddSubMenu("blockaa", "Auto E Special AA")
+    local block_aa_menu = self.menu:GetLocalChild("blockaa")
+    for i, enemy in ipairs(enemies) do
+        for k, spell in pairs(TargetedAA) do
+            if enemy:GetCharacterName() == spell.charName then
+                block_aa_menu:AddLabel(enemy:GetCharacterName(), true)
+                block_aa_menu:AddCheckbox(k, enemy:GetCharacterName() .." [AA] | ", true)
+                block_aa_menu:AddSlider(k .. "hp", "^- Health Percent: ", {min = 1, max = 100, default = 50, step = 1})
             end
         end
     end
 
     self.menu
     :AddSubMenu("harass", "Harass Settings")
-        :AddLabel("xd", "Q Settings", true, true)
+        :AddLabel("Q Settings", true)
         :AddCheckbox("q", "Use Q", true)
         :GetParent()
     :AddSubMenu("lc", "Lane Clear")
@@ -213,9 +251,25 @@ function Sivir:OnProcessSpell(unit, spell)
     if myHero:CanUseSpell(SDK.Enums.SpellSlot.E) and self.menu:GetLocal("combo.e") then
         local spellName = spell:GetName()
         local data = TargetedSpell[spellName]
-        if data and self.menu:GetLocal("combo.blockSpell." .. spellName) then
+        if data and self.menu:GetLocal("blockSpell." .. spellName) and self.menu:GetLocal("blockSpell." .. spellName .. "hp") >= Player.HealthPercent * 100 then
             local dt = unit:GetPosition():Distance(myHero:GetPosition())
             local hitTime = data.delay + dt/data.speed - self.menu:GetLocal("combo.wDelay")
+            delay(hitTime*1000, function() SDK.Input:Cast(SDK.Enums.SpellSlot.E, myHero) end)
+        end
+    end
+end
+
+function Sivir:OnBasicAttack(unit, spell)
+    if not spell:GetName():lower():find("attack") then return end
+    local target = spell:GetTarget()
+    if not (unit:IsEnemy() and target and target:IsMe()) then return end
+
+    if myHero:CanUseSpell(SDK.Enums.SpellSlot.E) and self.menu:GetLocal("combo.e") then
+        local spellName = spell:GetName()
+        local data = TargetedAA[spellName]
+        if data and self.menu:GetLocal("blockaa." .. spellName) and self.menu:GetLocal("blockaa." .. spellName .. "hp") >= Player.HealthPercent * 100 then
+            local dt = unit:GetPosition():Distance(myHero:GetPosition())
+            local hitTime = unit:GetAttackCastDelay() - self.menu:GetLocal("combo.wDelay")
             delay(hitTime*1000, function() SDK.Input:Cast(SDK.Enums.SpellSlot.E, myHero) end)
         end
     end
