@@ -300,7 +300,7 @@ function Rengar:JungleClear()
     if IsSpellReady("E") and Menu.Get("jg.e") then
         local JGE = ObjManager.GetNearby("neutral", "minions")
         for iJGE, objJGE in ipairs(JGE) do
-            if rTS:IsValidTarget(objJGE, 700) then
+            if rTS:IsValidTarget(objJGE, 700) and objJGE.MaxHealth > 3 then
                 Input.Cast(Enums.SpellSlots.E, objJGE.ServerPos)
             end
         end
@@ -308,7 +308,7 @@ function Rengar:JungleClear()
     if IsSpellReady("W") and Menu.Get("jg.w") then
         local JGW = ObjManager.GetNearby("neutral", "minions")
         for iJGW, objJGW in ipairs(JGW) do
-            if rTS:IsValidTarget(objJGW, 400) then
+            if rTS:IsValidTarget(objJGW, 400) and objJGW.MaxHealth > 3 then
                 if ((myHero.SpecialHealth/ myHero.MaxHealth) * 100 >= 15 or myHero.Mana == 3) then
                     Input.Cast(Enums.SpellSlots.W)
                 end
