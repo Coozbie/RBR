@@ -13,7 +13,7 @@ local Kayn = {}
 local update_data = {
     Robur = {
         ScriptName = "CXKayn",
-        ScriptVersion = "1.1",
+        ScriptVersion = "1.2",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -80,6 +80,10 @@ function Kayn:Menu()
         :AddSlider("wx", "^ W If Enemies >=", {min = 1, max = 5, default = 3, step = 1})
         :AddCheckbox("r", "Use R", true)
         :AddSlider("hp", "Min HP% for R", {min = 0, max = 100, default = 30, step = 5})
+        :GetParent()
+    :AddSubMenu("harass", "Harass Settings")
+        :AddLabel("W Settings", true)
+        :AddCheckbox("w", "Use W", true)
         :GetParent()
     :AddSubMenu("jg", "Jungle Clear Settings")
         :AddLabel("xd", "Jungle Settings")
@@ -321,7 +325,7 @@ function Kayn:OnTick()
     if myHero:CanUseSpell(SDK.Enums.SpellSlot.W) then
         local w_targets, w_preds = self.TS:GetTargets(self.w, myHero:GetPosition())
         local w_ks, w_ks_pred = self.TS:GetTargets(self.w, myHero:GetPosition(), function(enemy) return self:wDmg(enemy) >= enemy:GetHealth() end)
-        if (ComboMode and self.menu:GetLocal("combo.w")) then
+        if (ComboMode and self.menu:GetLocal("combo.w")) or (HarassMode and self.menu:GetLocal("harass.w")) then
             local target = w_targets[1]
             if target then
                 local pred = w_preds[target:GetNetworkId()]
