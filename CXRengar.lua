@@ -17,7 +17,7 @@ local myHero = Player
 
 
 local Rengar = {}
-local version = 1.0.0
+local version = 1.0
 
 local SCRIPT_NAME, VERSION, LAST_UPDATE = "CXRengar", "1.0.0", "22/08/2022"
 _G.CoreEx.AutoUpdate("https://raw.githubusercontent.com/Coozbie/RBR/main/CXRengar.lua", VERSION)
