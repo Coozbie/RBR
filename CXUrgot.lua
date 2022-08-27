@@ -18,9 +18,9 @@ local myHero = Player
 
 
 local Urgot = {}
-local version = 1.0
+local version = 1.1
 
-local SCRIPT_NAME, VERSION, LAST_UPDATE = "CXUrgot", "1.0", "22/08/2022"
+local SCRIPT_NAME, VERSION, LAST_UPDATE = "CXUrgot", "1.1", "22/08/2022"
 _G.CoreEx.AutoUpdate("https://raw.githubusercontent.com/Coozbie/RBR/main/CXUrgot.lua", VERSION)
 
 local Vector = CoreEx.Geometry.Vector
@@ -212,7 +212,7 @@ function Urgot:GetEnemyAndJungleMinions(radius, fromPos)
 end
 
 function Urgot:JungleClear()
-    if IsSpellReady("E") and Menu.Get("jg.E") then
+    if IsSpellReady("E") and Menu.Get("jg.e") then
         local JGE = ObjManager.GetNearby("neutral", "minions")
         for iJGE, objJGE in ipairs(JGE) do
             if rTS:IsValidTarget(objJGE, 445) and objJGE.MaxHealth > 3 then
