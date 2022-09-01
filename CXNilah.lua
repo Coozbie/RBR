@@ -13,7 +13,7 @@ local Nilah = {}
 local update_data = {
     Robur = {
         ScriptName = "CXNilah",
-        ScriptVersion = "1.2",
+        ScriptVersion = "1.3",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -328,35 +328,36 @@ function Nilah:GetEnemyHeroesInRange(range, pos)
 end
 
 function Nilah:OnProcessSpell(unit, spell)
+    local target = spell:GetTarget()
     if spell:GetName() == "NilahE" and myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) then
-        local target = spell:GetTarget()
         if target and target:IsValid() and target:IsEnemy() and target:IsHero() then
             SDK.Input:Cast(SDK.Enums.SpellSlot.Q, myHero:GetPosition())
         end
     end
-    if unit:IsEnemy() and spell:GetTarget():IsMe() then
-        if myHero:CanUseSpell(SDK.Enums.SpellSlot.W) and self.menu:GetLocal("combo.w") then
-            for k, v in pairs(TargetedSpell) do
-                if k == spell:GetName() and self.menu:GetLocal("blockSpell." .. k) and myHero:GetHealthPercent() <= self.menu:GetLocal("blockSpell." .. k .. "hp")  then
-                    print("XD")
-                    local dt = unit:GetPosition():Distance(myHero:GetPosition())
-                    local hitTime = v.delay + dt/v.speed
-                    self:DelayAction(function() SDK.Input:Cast(SDK.Enums.SpellSlot.W, myHero) end, hitTime - self.menu:GetLocal("combo.wDelay") )
-                end
-            end
+    if not (unit:IsEnemy() and target and target:IsMe()) then return end
+    if myHero:CanUseSpell(SDK.Enums.SpellSlot.W) and self.menu:GetLocal("combo.w") then
+        local spellName = spell:GetName()
+        local data = TargetedSpell[spellName]
+        if data and self.menu:GetLocal("blockSpell." .. spellName) and self.menu:GetLocal("blockSpell." .. spellName .. "hp") >= Player.HealthPercent * 100 then
+            local dt = unit:GetPosition():Distance(myHero:GetPosition())
+            local hitTime = data.delay + dt/data.speed - self.menu:GetLocal("combo.wDelay")
+            delay(hitTime*1000, function() SDK.Input:Cast(SDK.Enums.SpellSlot.W, myHero) end)
         end
     end
 end
 
 function Nilah:OnExecuteCastFrames(unit, spell)
     if not spell:GetName():lower():find("attack") then return end
-    if myHero:CanUseSpell(SDK.Enums.SpellSlot.W) and self.menu:GetLocal("combo.w") and spell:GetTarget():IsMe() then
-        for k, v in pairs(TargetedAA) do
-            if k == spell:GetName() and self.menu:GetLocal("blockaa." .. k) and myHero:GetHealthPercent() <= self.menu:GetLocal("blockaa." .. k .. "hp") then
-                local dt = unit:GetPosition():Distance(myHero:GetPosition())
-                local hitTime = spell:GetCastDelay() + dt/v.speed
-                SDK.Input:Cast(SDK.Enums.SpellSlot.W, myHero)
-            end
+    local target = spell:GetTarget()
+    if not (unit:IsEnemy() and target and target:IsMe()) then return end
+
+    if myHero:CanUseSpell(SDK.Enums.SpellSlot.W) and self.menu:GetLocal("combo.w") then
+        local spellName = spell:GetName()
+        local data = TargetedAA[spellName]
+        if data and self.menu:GetLocal("blockaa." .. spellName) and self.menu:GetLocal("blockaa." .. spellName .. "hp") >= Player.HealthPercent * 100 then
+            local dt = unit:GetPosition():Distance(myHero:GetPosition())
+            local hitTime = unit:GetAttackCastDelay() - self.menu:GetLocal("combo.wDelay")
+            delay(hitTime*1000, function() SDK.Input:Cast(SDK.Enums.SpellSlot.W, myHero) end)
         end
     end
 end
