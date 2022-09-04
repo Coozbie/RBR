@@ -13,7 +13,7 @@ local Ashe = {}
 local update_data = {
     Robur = {
         ScriptName = "CXAshe",
-        ScriptVersion = "1.2",
+        ScriptVersion = "1.3",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -22,6 +22,8 @@ SDK.Common.AutoUpdate(update_data)
 
 local DreamTS = DreamTSLib.TargetSelectorSdk
 local Vector = SDK.Libs.Vector
+local roburTS = _G.Libs.TargetSelector()
+local HealthPred = Libs.HealthPred
 
 ---@param objects SDK_GameObject[]
 ---@return SDK_AIHeroClient[]
@@ -71,15 +73,13 @@ function Ashe:__init()
     SDK.EventManager:RegisterCallback(SDK.Enums.Events.OnTick, function() self:OnTick() end)
     SDK.EventManager:RegisterCallback(SDK.Enums.Events.OnDraw, function() self:OnDraw() end)
     _G.CoreEx.EventManager.RegisterCallback(_G.CoreEx.Enums.Events.OnPostAttack, function(target) self:OnExecuteCastFrame(SDK.Types.AIBaseClient(target)) end)
-    self.fontSize = 25
-    self.font1Size = 12
 end
 
 function Ashe:Menu()
     self.menu = SDK.Libs.Menu("cxashe", "Cyrex Ashe")
 
     self.menu
-    :AddLabel("png", "Cyrex Ashe Settings", true, true)
+    :AddLabel("Cyrex Ashe Settings", true)
     :AddSubMenu("dreamTs", "Target Selector")
 
     self.menu
@@ -260,7 +260,7 @@ end
 
 function Ashe:OnExecuteCastFrame(target)
     if self.menu:GetLocal("combo.q") and myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) and (_G.Libs.Orbwalker.GetMode() == "Combo" or _G.Libs.Orbwalker.GetMode() == "Harass") then
-        if target and _G.Libs.TargetSelector():IsValidTarget(target) and target:GetPosition():DistanceSqr(myHero:GetPosition()) < self:GetAARange(target)^2 then
+        if target and roburTS:IsValidTarget(target.data) and target:GetPosition():DistanceSqr(myHero:GetPosition()) < self:GetAARange(target)^2 then
             SDK.Input:Cast(SDK.Enums.SpellSlot.Q, myHero)
         end
     end
