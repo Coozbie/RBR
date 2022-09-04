@@ -17,9 +17,9 @@ local myHero = Player
 
 
 local Kassadin = {}
-local version = 1.0
+local version = 1.1
 
-local SCRIPT_NAME, VERSION, LAST_UPDATE = "CXKassadin", "1.0", "22/08/2022"
+local SCRIPT_NAME, VERSION, LAST_UPDATE = "CXKassadin", "1.1", "22/08/2022"
 _G.CoreEx.AutoUpdate("https://raw.githubusercontent.com/Coozbie/RBR/main/CXKassadin.lua", VERSION)
 
 local Vector = CoreEx.Geometry.Vector
@@ -535,7 +535,7 @@ function Kassadin:OnUnkillableMinion(minion)
         local time = 0.25 + dist/1400
         local dmg = DamageLib.GetSpellDamage(myHero, minion, Enums.SpellSlots.Q)
         local health = HealthPred.GetHealthPrediction(minion, time)
-        if dmg > health and Input.Cast(Enums.SpellSlots.Q, minion:FastPrediction(time*1000)) then
+        if dmg > health and Input.Cast(Enums.SpellSlots.Q, minion) then
             Orbwalker.IgnoreMinion(minion)
             return
         end
