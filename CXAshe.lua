@@ -259,9 +259,9 @@ function Ashe:CastR(pred, rate)
 end
 
 function Ashe:OnExecuteCastFrame(target)
-    if self.menu:GetLocal("combo.q") and myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) and (_G.Libs.Orbwalker.GetMode() == "Combo" or _G.Libs.Orbwalker.GetMode() == "Harass") then
-        if target and roburTS:IsValidTarget(target.data) and target:GetPosition():DistanceSqr(myHero:GetPosition()) < self:GetAARange(target)^2 then
-            SDK.Input:Cast(SDK.Enums.SpellSlot.Q, myHero)
+    if self.menu:GetLocal("combo.q") and myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) and (_G.Libs.Orbwalker.GetMode() == "Combo") then
+        if target and roburTS:IsValidTarget(target.data) and target:GetPosition():Distance(myHero:GetPosition()) < self:GetAARange(target) then
+            SDK.Input:Cast(SDK.Enums.SpellSlot.Q)
         end
     end
 end
