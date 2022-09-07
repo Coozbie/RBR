@@ -13,7 +13,7 @@ local Ashe = {}
 local update_data = {
     Robur = {
         ScriptName = "CXAshe",
-        ScriptVersion = "1.3",
+        ScriptVersion = "1.4",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -261,7 +261,7 @@ end
 function Ashe:OnExecuteCastFrame(target)
     if self.menu:GetLocal("combo.q") and myHero:CanUseSpell(SDK.Enums.SpellSlot.Q) and (_G.Libs.Orbwalker.GetMode() == "Combo") then
         if target and roburTS:IsValidTarget(target.data) and target:GetPosition():Distance(myHero:GetPosition()) < self:GetAARange(target) then
-            SDK.Input:Cast(SDK.Enums.SpellSlot.Q)
+            SDK.Input:Cast(SDK.Enums.SpellSlot.Q, myHero)
         end
     end
 end
