@@ -13,7 +13,7 @@ local Ahri = {}
 local update_data = {
     Robur = {
         ScriptName = "CXAhri",
-        ScriptVersion = "2.6",
+        ScriptVersion = "2.7",
         Repo = "https://raw.githubusercontent.com/Coozbie/RBR/main/"
     }
 }
@@ -450,5 +450,5 @@ function Ahri:GetTargetNormal(dist, all)
 end
 
 if myHero:GetCharacterName() == "Ahri" then
-    Ahri:__init()
+    print("Hagbard eats dicks")
 end
